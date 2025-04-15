@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard - Broken Access Control Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Notes Dashboard</h2>
+    <div id="user-info">
+      <!-- User information will be displayed here -->
+    </div>
+    
+    <div class="note-section">
+      <input type="text" id="noteInput" placeholder="Enter your note" />
+      <button onclick="addNote()">Add Note</button>
+    </div>
+
+    <h3>Your Notes</h3>
+    <ul id="noteList"></ul>
+    
+    <!-- VULNERABILITY: Direct links to pages without proper access control -->
+    <div class="nav-buttons">
+      <button onclick="logout()">Logout</button>
+      <a href="secret.html" class="button">View Secret Page 🚨</a>
+      <a href="admin.html" class="button admin-link" id="adminLink">Admin Panel</a>
+    </div>
+    
+    <div class="vulnerability-info">
+      <h3>Vulnerabilities Demonstrated:</h3>
+      <ol>
+        <li>Missing Function Level Access Control - Dashboard accessible without authentication</li>
+        <li>Improper Authorization - Secret page accessible by anyone</li>
+        <li>Horizontal Privilege Escalation - User IDs can be manipulated in URLs</li>
+        <li>Insecure Direct Object References - Notes can be accessed by ID regardless of owner</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    // VULNERABILITY: This check can be bypassed by manipulating localStorage in developer tools
+    if (localStorage.getItem("loggedIn") !== "true") {
+      alert("Please login first!");
+      window.location.href = "index.html";
+    }
+    
+    // Display user info
+    const username = localStorage.getItem("username") || "Unknown";
+    const role = localStorage.getItem("role") || "user";
+    document.getElementById("user-info").innerHTML = `
+      <p>Logged in as: <strong>${username}</strong> (${role})</p>
+    `;
+    
+    // Only show admin link for admin role (but this is easily bypassed)
+    if (role !== "admin") {
+      document.getElementById("adminLink").style.display = "none";
+    }
+
+    // VULNERABILITY: Notes are stored globally and not per-user
+    function loadNotes() {
+      // Simulate getting notes for the current user (VULNERABILITY: no server-side check)
+      // URL Parameter Vulnerability: We allow loading notes for any user ID
+      const urlParams = new URLSearchParams(window.location.search);
+      const userIdParam = urlParams.get('userId');
+      
+      // If a userId parameter exists, load that user's notes instead
+      // VULNERABILITY: Users can view other users' notes by changing the URL
+      const noteOwner = userIdParam || username;
+      
+      // We'll use a key based on the username to store notes
+      const noteKey = `notes_${noteOwner}`;
+      
+      // If viewing someone else's notes, show a warning
+      if (userIdParam && userIdParam !== username) {
+        document.getElementById("user-info").innerHTML += `
+          <div class="warning-box">
+            <p>⚠️ You are viewing notes for user: <strong>${userIdParam}</strong></p>
+            <p>This demonstrates an Insecure Direct Object Reference vulnerability.</p>
+          </div>
+        `;
+      }
+      
+      const notes = JSON.parse(localStorage.getItem(noteKey) || "[]");
+      const list = document.getElementById("noteList");
+      list.innerHTML = "";
+
+      if (notes.length === 0) {
+        list.innerHTML = "<li>No notes found.</li>";
+        return;
+      }
+
+      notes.forEach((note, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <input type="text" value="${note}" onchange="updateNote(${index}, this.value)" />
+          <button onclick="deleteNote(${index})">Delete</button>
+          <a href="note.html?id=${index}&owner=${noteOwner}" class="view-link">View Details</a>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function addNote() {
+      const note = document.getElementById("noteInput").value;
+      if (!note) return alert("Note can't be empty!");
+      
+      const noteKey = `notes_${username}`;
+      let notes = JSON.parse(localStorage.getItem(noteKey) || "[]");
+      notes.push(note);
+      localStorage.setItem(noteKey, JSON.stringify(notes));
+      document.getElementById("noteInput").value = "";
+      loadNotes();
+    }
+
+    function deleteNote(index) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const userIdParam = urlParams.get('userId');
+      const noteOwner = userIdParam || username;
+      const noteKey = `notes_${noteOwner}`;
+      
+      let notes = JSON.parse(localStorage.getItem(noteKey) || "[]");
+      notes.splice(index, 1);
+      localStorage.setItem(noteKey, JSON.stringify(notes));
+      loadNotes();
+    }
+
+    function updateNote(index, newText) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const userIdParam = urlParams.get('userId');
+      const noteOwner = userIdParam || username;
+      const noteKey = `notes_${noteOwner}`;
+      
+      let notes = JSON.parse(localStorage.getItem(noteKey) || "[]");
+      notes[index] = newText;
+      localStorage.setItem(noteKey, JSON.stringify(notes));
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("username");
+      localStorage.removeItem("role");
+      window.location.href = "index.html";
+    }
+
+    // Initialize with some demo notes if none exist
+    function initDemoNotes() {
+      // Add demo notes for admin
+      if (!localStorage.getItem("notes_admin")) {
+        const adminNotes = [
+          "CONFIDENTIAL: Server credentials - username: root, password: serverpass123",
+          "TODO: Fix security vulnerabilities in the application",
+          "Admin meeting notes: Discussed new security measures"
+        ];
+        localStorage.setItem("notes_admin", JSON.stringify(adminNotes));
+      }
+      
+      // Add demo notes for regular user
+      if (!localStorage.getItem("notes_user")) {
+        const userNotes = [
+          "My shopping list: milk, eggs, bread",
+          "Call dentist to schedule appointment",
+          "Work on project presentation for Friday"
+        ];
+        localStorage.setItem("notes_user", JSON.stringify(userNotes));
+      }
+    }
+
+    // Initialize and load notes
+    initDemoNotes();
+    loadNotes();
+  </script>
+</body>
+</html>

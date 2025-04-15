@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel - Broken Access Control Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Admin Control Panel</h2>
+    <div id="user-info"></div>
+    
+    <div class="vulnerability-box">
+      <p><strong>VULNERABILITY #3: Improper Authorization Checks</strong></p>
+      <p>This page has authentication but insufficient authorization. It only checks if you're logged in, not if you have admin privileges!</p>
+    </div>
+    
+    <h3>User Management</h3>
+    <div class="admin-section">
+      <table id="userTable">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- User data will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+    
+    <h3>System Settings</h3>
+    <div class="admin-section">
+      <div class="setting-item">
+        <label>Application Mode:</label>
+        <select id="appMode">
+          <option value="production">Production</option>
+          <option value="development">Development</option>
+          <option value="testing">Testing</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>Debug Logging:</label>
+        <input type="checkbox" id="debugLogging">
+      </div>
+      <button onclick="saveSettings()">Save Settings</button>
+    </div>
+    
+    <div class="secure-alternative">
+      <h3>Secure Implementation:</h3>
+      <pre><code>// Check authentication
+if (!localStorage.getItem("loggedIn")) {
+  window.location.href = "index.html?error=Please log in first";
+}
+
+// Check authorization for admin-only page
+if (localStorage.getItem("role") !== "admin") {
+  window.location.href = "dashboard.html?error=Admin access required";
+}</code></pre>
+    </div>
+    
+    <div class="nav-buttons">
+      <button onclick="goToDashboard()">Back to Dashboard</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    // VULNERABILITY: Only checks authentication, not authorization
+    if (!localStorage.getItem("loggedIn")) {
+      alert("Please login first!");
+      window.location.href = "index.html";
+    }
+    
+    // Missing proper authorization check!
+    // Should have: if (localStorage.getItem("role") !== "admin") { ... }
+    
+    const username = localStorage.getItem("username") || "Unknown";
+    const role = localStorage.getItem("role") || "user";
+    
+    // Show user info
+    document.getElementById("user-info").innerHTML = `
+      <p>Logged in as: <strong>${username}</strong> (${role})</p>
+      ${role !== "admin" ? '<p class="warning">⚠️ You are not an admin but still have access to this page!</p>' : ''}
+    `;
+    
+    // Display user data
+    function loadUserData() {
+      const userData = [
+        { username: "admin", role: "admin" },
+        { username: "user", role: "user" }
+      ];
+      
+      const tbody = document.querySelector("#userTable tbody");
+      tbody.innerHTML = "";
+      
+      userData.forEach(user => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${user.username}</td>
+          <td>${user.role}</td>
+          <td>
+            <button onclick="resetPassword('${user.username}')">Reset Password</button>
+            <button onclick="deleteUser('${user.username}')">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    
+    function resetPassword(username) {
+      alert(`Password reset for ${username}`);
+    }
+    
+    function deleteUser(username) {
+      alert(`User ${username} would be deleted in a real system`);
+    }
+    
+    function saveSettings() {
+      const mode = document.getElementById("appMode").value;
+      const debug = document.getElementById("debugLogging").checked;
+      
+      alert(`Settings saved: Mode=${mode}, Debug=${debug}`);
+    }
+    
+    function goToDashboard() {
+      window.location.href = "dashboard.html";
+    }
+    
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("username");
+      localStorage.removeItem("role");
+      window.location.href = "index.html";
+    }
+    
+    // Initialize
+    loadUserData();
+  </script>
+</body>
+</html>

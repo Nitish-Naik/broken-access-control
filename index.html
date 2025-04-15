@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login - Broken Access Control Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Login Page</h2>
+    <div id="error-message" class="error-message"></div>
+    
+    <input type="text" id="username" placeholder="Enter Username" />
+    <input type="password" id="password" placeholder="Enter Password" />
+    <button onclick="login()">Login</button>
+    
+    <div class="info-box">
+      <h3>Available Test Accounts:</h3>
+      <ul>
+        <li><strong>Admin:</strong> username: admin, password: 1234</li>
+        <li><strong>User:</strong> username: user, password: user123</li>
+      </ul>
+      <p><strong>Vulnerability #1:</strong> Client-side authentication can be bypassed by directly visiting dashboard.html</p>
+    </div>
+  </div>
+
+  <script>
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      
+      // VULNERABILITY: Client-side authentication
+      if ((user === "admin" && pass === "1234") || (user === "user" && pass === "user123")) {
+        // Store user role to demonstrate role-based vulnerabilities
+        localStorage.setItem("username", user);
+        localStorage.setItem("role", user === "admin" ? "admin" : "user");
+        localStorage.setItem("loggedIn", "true");
+        window.location.href = "dashboard.html";
+      } else {
+        document.getElementById("error-message").textContent = "Invalid credentials";
+      }
+    }
+    
+    // Check if there are URL parameters that could reveal a vulnerability
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('error')) {
+      document.getElementById("error-message").textContent = urlParams.get('error');
+    }
+  </script>
+</body>
+</html>

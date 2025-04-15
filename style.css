@@ -1,0 +1,228 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+  }
+  
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    color: #2c3e50;
+    margin-top: 0;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+  }
+  
+  h3 {
+    color: #3498db;
+    margin-top: 20px;
+  }
+  
+  input[type="text"],
+  input[type="password"],
+  select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    display: block;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+  }
+  
+  button, .button {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-block;
+    text-decoration: none;
+  }
+  
+  button:hover, .button:hover {
+    background-color: #2980b9;
+  }
+  
+  .admin-link {
+    background-color: #e74c3c;
+  }
+  
+  .admin-link:hover {
+    background-color: #c0392b;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    background-color: #f9f9f9;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 4px;
+    border: 1px solid #eee;
+    display: flex;
+    align-items: center;
+  }
+  
+  li input[type="text"] {
+    flex: 1;
+    margin-right: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  
+  .view-link {
+    color: #3498db;
+    text-decoration: none;
+    margin-left: 8px;
+  }
+  
+  .view-link:hover {
+    text-decoration: underline;
+  }
+  
+  .info-box, .vulnerability-box, .warning-box, .secure-alternative {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 20px 0;
+  }
+  
+  .info-box {
+    background-color: #e8f4fd;
+    border-color: #b8daff;
+  }
+  
+  .vulnerability-box {
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+  }
+  
+  .warning-box, .warning {
+    color: #e74c3c;
+    font-weight: bold;
+  }
+  
+  .secure-alternative {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+  }
+  
+  .error-message {
+    color: #e74c3c;
+    margin: 10px 0;
+    font-weight: bold;
+  }
+  
+  pre {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+  }
+  
+  code {
+    font-family: Monaco, Consolas, "Courier New", monospace;
+    font-size: 14px;
+  }
+  
+  .nav-buttons {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+  }
+  
+  .exposed-notes li {
+    background-color: #fee;
+    border-color: #fcc;
+  }
+  
+  .note-info {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+  }
+  
+  .note-content {
+    background-color: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  /* Admin Panel Styles */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+  }
+  
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  tr:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .admin-section {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  
+  .setting-item {
+    margin-bottom: 15px;
+  }
+  
+  .setting-item label {
+    display: inline-block;
+    width: 150px;
+    font-weight: bold;
+  }
+  
+  #user-info {
+    background-color: #e8f4fd;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  
+  .note-section {
+    margin-bottom: 20px;
+  }
+  
+  .vulnerability-info {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+  }

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Note Details - Broken Access Control Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Note Details</h2>
+    <div id="note-details">
+      <!-- Note details will appear here -->
+    </div>
+    
+    <div class="vulnerability-box">
+      <p><strong>VULNERABILITY #4: Insecure Direct Object References (IDOR)</strong></p>
+      <p>This page demonstrates IDOR by allowing access to any note by changing the ID parameter in the URL.</p>
+      <p>Try changing the "id" and "owner" parameters in the URL to access other users' notes.</p>
+    </div>
+    
+    <div class="secure-alternative">
+      <h3>Secure Implementation:</h3>
+      <pre><code>// Check authentication
+if (!localStorage.getItem("loggedIn")) {
+  window.location.href = "index.html?error=Please log in first";
+}
+
+// Retrieve parameters
+const urlParams = new URLSearchParams(window.location.search);
+const noteId = urlParams.get('id');
+const noteOwner = urlParams.get('owner');
+const currentUser = localStorage.getItem("username");
+
+// Check if user has permission to view this note
+if (noteOwner !== currentUser && localStorage.getItem("role") !== "admin") {
+  window.location.href = "dashboard.html?error=Access denied";
+}</code></pre>
+    </div>
+    
+    <div class="nav-buttons">
+      <button onclick="goBack()">Back to Dashboard</button>
+    </div>
+  </div>
+
+  <script>
+    // VULNERABILITY: No authentication check!
+    
+    function loadNoteDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const noteId = urlParams.get('id');
+      const noteOwner = urlParams.get('owner');
+      
+      if (!noteId || !noteOwner) {
+        document.getElementById("note-details").innerHTML = `
+          <div class="error-message">Missing note ID or owner</div>
+        `;
+        return;
+      }
+      
+      // VULNERABILITY: No check if the current user is the owner of the note
+      const noteKey = `notes_${noteOwner}`;
+      const notes = JSON.parse(localStorage.getItem(noteKey) || "[]");
+      
+      if (noteId >= 0 && noteId < notes.length) {
+        const note = notes[noteId];
+        document.getElementById("note-details").innerHTML = `
+          <div class="note-info">
+            <p><strong>Note ID:</strong> ${noteId}</p>
+            <p><strong>Owner:</strong> ${noteOwner}</p>
+          </div>
+          <div class="note-content">
+            <h3>Content:</h3>
+            <p>${note}</p>
+          </div>
+        `;
+      } else {
+        document.getElementById("note-details").innerHTML = `
+          <div class="error-message">Note not found</div>
+        `;
+      }
+    }
+    
+    function goBack() {
+      window.location.href = "dashboard.html";
+    }
+    
+    // Load note details when page loads
+    window.onload = loadNoteDetails;
+  </script>
+</body>
+</html>
